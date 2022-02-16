@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const JoiSchema = require('../helpers/schemas');
-const { User } = require('../models/User');
+const { User } = require('../models');
 require('dotenv').config();
 
 const loginValidation = async ({ email, password }) => {
