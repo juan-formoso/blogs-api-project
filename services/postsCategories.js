@@ -1,4 +1,4 @@
-const categoriesModel = require('../models/categories');
+const categoriesModel = require('../models/Categories');
 const JoiSchema = require('../helpers/schemas');
 
 const create = async (name) => {

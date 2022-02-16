@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken');
 const JoiSchema = require('../helpers/schemas');
-const userModel = require('../models/user');
+const { User } = require('../models/User');
 require('dotenv').config();
 
 const userValidation = async ({ displayName, email, password, image }) => {
   const { error } = JoiSchema.userSchema.validate({ displayName, email, password, image });
   if (error) return { code: 400, message: error.details[0].message };
-  const ifEmailExists = await userModel.findOne({ where: { email } });
+  const ifEmailExists = await User.findOne({ where: { email } });
   if (ifEmailExists) return { code: 409, message: 'User already registered' };
   return {};
 };
@@ -14,7 +14,7 @@ const userValidation = async ({ displayName, email, password, image }) => {
 const createUser = async ({ displayName, email, password, image }) => {
   const { code, message } = await userValidation({ displayName, email, password, image });
   if (code) return { code, message };
-  const user = await userModel.create({ displayName, email, password, image });
+  const user = await User.create({ displayName, email, password, image });
   const { password: _, ...userCreated } = user.dataValues;
   const token = jwt.sign(userCreated, process.env.JWT_SECRET, {
     algorithm: 'HS256',
@@ -24,18 +24,18 @@ const createUser = async ({ displayName, email, password, image }) => {
 };
 
 const getAllUsers = async () => {
-  const allUsers = await userModel.findAll();
+  const allUsers = await User.findAll();
   return allUsers;
 };
 
 const getUserById = async (id) => {
-  const user = await userModel.findByPk(id);
+  const user = await User.findByPk(id);
   return user || { code: 404, message: 'User does not exist' };
 };
 
 const deleteUser = async (token) => {
   const { id } = jwt.decode(token, process.env.JWT_SECRET);
-  const deletedUser = await userModel.destroy({ where: { id } });
+  const deletedUser = await User.destroy({ where: { id } });
   return deletedUser;
 };
 

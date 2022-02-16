@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
-const userModel = require('../models/user');
-const categoriesModel = require('../models/categories');
-const postsCategoriesModel = require('../models/postscategories');
-const blogPostsModel = require('../models/blogposts');
+const { User } = require('../models/User');
+const categoriesModel = require('../models/Categories');
+const postsCategoriesModel = require('../models/PostsCategories');
+const blogPostsModel = require('../models/BlogPosts');
 const JoiSchema = require('../helpers/schemas');
 require('dotenv').config();
 
@@ -58,7 +58,7 @@ const getPostById = async (id) => {
   const [categories] = await blogPostsModel.findAll({ 
     where: { id }, 
     include: [
-      { model: userModel, as: 'user', attributes: { exclude: ['password'] } },
+      { model: User, as: 'user', attributes: { exclude: ['password'] } },
       { model: categoriesModel, as: 'categories', through: { attributes: [] } },
     ], 
   });
@@ -68,7 +68,7 @@ const getPostById = async (id) => {
 const getAllCategories = async () => {
   const categories = await blogPostsModel.findAll({
     include: [
-      { model: userModel, as: 'user', attributes: { exclude: ['password'] } },
+      { model: User, as: 'user', attributes: { exclude: ['password'] } },
       { model: categoriesModel, as: 'categories', through: { attributes: [] } },
     ], 
   });
@@ -105,7 +105,7 @@ const searchByTitleOrContent = async (searchTerm) => {
     ],
     },  
     include: [
-      { model: userModel, as: 'user', attributes: { exclude: ['password'] } },
+      { model: User, as: 'user', attributes: { exclude: ['password'] } },
       { model: categoriesModel, as: 'categories', through: { attributes: [] } },
     ], 
   });

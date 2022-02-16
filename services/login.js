@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken');
 const JoiSchema = require('../helpers/schemas');
-const userModel = require('../models/user');
+const { User } = require('../models/User');
 require('dotenv').config();
 
 const loginValidation = async ({ email, password }) => {
   const { error } = JoiSchema.loginSchema.validate({ email, password });
   if (error) return { code: 400, message: error.details[0].message };
-  const user = await userModel.findOne({ where: { email } });
+  const user = await User.findOne({ where: { email } });
   if (!user) return { code: 400, message: 'Invalid fields' };
   return user;
 };
