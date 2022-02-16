@@ -39,9 +39,4 @@ const deleteUser = async (token) => {
   return deletedUser;
 };
 
-module.exports = {
-  deleteUser,
-  createUser,
-  getAllUsers,
-  getUserById,
-};
+module.exports = { deleteUser, createUser, getAllUsers, getUserById };
