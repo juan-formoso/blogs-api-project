@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const { User } = require('../models');
-const { Categories } = require('../models');
+const { Category } = require('../models');
 const { PostsCategories } = require('../models');
 const { BlogPosts } = require('../models');
 const JoiSchema = require('../helpers/schemas');
@@ -13,7 +13,7 @@ const decodeToken = (token) => {
 };
 
 const categoryValidation = async (categoryIds) => {
-  const categories = categoryIds.map((value) => Categories.findByPk(value));
+  const categories = categoryIds.map((value) => Category.findByPk(value));
   const exists = await Promise.all(categories);
   if (exists.some((value) => value === null)) {
     return false;
@@ -59,7 +59,7 @@ const getPostById = async (id) => {
     where: { id }, 
     include: [
       { model: User, as: 'user', attributes: { exclude: ['password'] } },
-      { model: Categories, as: 'categories', through: { attributes: [] } },
+      { model: Category, as: 'categories', through: { attributes: [] } },
     ], 
   });
   return categories || { code: 404, message: 'Post does not exist' };
@@ -69,7 +69,7 @@ const getAllCategories = async () => {
   const categories = await BlogPosts.findAll({
     include: [
       { model: User, as: 'user', attributes: { exclude: ['password'] } },
-      { model: Categories, as: 'categories', through: { attributes: [] } },
+      { model: Category, as: 'categories', through: { attributes: [] } },
     ], 
   });
   return categories;
@@ -82,7 +82,7 @@ const updatePost = async (token, { id, title, content, categoryIds }) => {
   const [post] = await BlogPosts.findAll({ 
     where: { id },
     attributes: { exclude: ['id', 'published', 'updated'] },
-    include: { model: Categories, as: 'categories', through: { attributes: [] } },
+    include: { model: Category, as: 'categories', through: { attributes: [] } },
   });
   return post;
 };
@@ -106,7 +106,7 @@ const searchByTitleOrContent = async (searchTerm) => {
     },  
     include: [
       { model: User, as: 'user', attributes: { exclude: ['password'] } },
-      { model: Categories, as: 'categories', through: { attributes: [] } },
+      { model: Category, as: 'categories', through: { attributes: [] } },
     ], 
   });
   return findPost || [];
