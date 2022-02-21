@@ -1,15 +1,15 @@
 const router = require('express').Router();
 const { 
-  createBlogPost, 
-  getAllCategories,
+  create, 
+  getAll,
   getPostById, 
   updatePost,
+  searchByTitleOrContent, 
   deletePost,
-  searchByTitleOrContent,
 } = require('../controllers/blogPosts');
 
-router.post('/', createBlogPost);
-router.get('/', getAllCategories);
+router.post('/', create);
+router.get('/', getAll);
 router.get('/search', searchByTitleOrContent);
 router.get('/:id', getPostById);
 router.put('/:id', updatePost);
