@@ -1,20 +1,24 @@
 const rescue = require('express-rescue');
 const blogPostsServices = require('../services/blogPosts');
 
-const createBlogPost = rescue(async (req, res) => {
+const createBlogPostControllers = async (req, res) => {
   const { authorization } = req.headers;
   const { title, content, categoryIds } = req.body;
-  const post = await blogPostsServices.createBlogPost(
+  const post = await blogPostsServices.createBlogPostServices(
     authorization, { title, content, categoryIds },
   );
   if (post.code) return res.status(post.code).json({ message: post.message });
   return res.status(201).json(post);
-});
+};
 
-const getAllCategories = rescue(async (req, res) => {
-  const blogPosts = await blogPostsServices.getAllCategories();
+const getAllCategories = rescue(async (_req, res) => {
+  const blogPosts = await blogPostsServices.getAllCategories(); 
   return res.status(200).json(blogPosts);
 });
+
+/* const getAllCategories = (_req, res) => {
+  res.status(200).json([]);
+}; */
 
 const getPostById = rescue(async (req, res) => {
   const { id } = req.params;
@@ -49,7 +53,7 @@ const searchByTitleOrContent = rescue(async (req, res) => {
 });
 
 module.exports = {
-  createBlogPost,
+  createBlogPostControllers,
   getAllCategories,
   getPostById,
   updatePost,

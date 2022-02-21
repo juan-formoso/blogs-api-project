@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const { User } = require('../models');
 const { Categories } = require('../models');
 const { PostsCategories } = require('../models');
-const { BlogPosts } = require('../models');
+const { BlogPost } = require('../models');
 const JoiSchema = require('../helpers/schemas');
 require('dotenv').config();
 
@@ -38,12 +38,12 @@ const updatePostValidation = (token, { id, title, content, categoryIds }) => {
   return {};
 };
 
-const createBlogPost = async (userToken, { title, content, categoryIds }) => {
+const createBlogPostServices = async (userToken, { title, content, categoryIds }) => {
   const { code, message } = await blogPostValidation({ title, content, categoryIds });
   const id = decodeToken(userToken);
   const date = new Date();
   if (code) return { code, message };
-  const post = await BlogPosts.create(
+  const post = await BlogPost.create(
     { userId: id, title, content, updated: date, published: date },
   );
   const postId = post.dataValues.id;
@@ -55,7 +55,7 @@ const createBlogPost = async (userToken, { title, content, categoryIds }) => {
 };
 
 const getPostById = async (id) => {
-  const [categories] = await BlogPosts.findAll({ 
+  const [categories] = await BlogPost.findAll({ 
     where: { id }, 
     include: [
       { model: User, as: 'user', attributes: { exclude: ['password'] } },
@@ -66,20 +66,19 @@ const getPostById = async (id) => {
 };
 
 const getAllCategories = async () => {
-  const categories = await BlogPosts.findAll({
-    include: [
+  const categories = await BlogPost.findAll(
+/*     include: [
       { model: User, as: 'user', attributes: { exclude: ['password'] } },
       { model: Categories, as: 'categories', through: { attributes: [] } },
-    ], 
-  });
+    ],  */);
   return categories;
 };
 
 const updatePost = async (token, { id, title, content, categoryIds }) => {
   const { code, message } = updatePostValidation(token, { id, title, content, categoryIds });
   if (code) return { code, message };
-  await BlogPosts.update({ title, content, updated: new Date() }, { where: { id } });
-  const [post] = await BlogPosts.findAll({ 
+  await BlogPost.update({ title, content, updated: new Date() }, { where: { id } });
+  const [post] = await BlogPost.findAll({ 
     where: { id },
     attributes: { exclude: ['id', 'published', 'updated'] },
     include: { model: Categories, as: 'categories', through: { attributes: [] } },
@@ -89,16 +88,16 @@ const updatePost = async (token, { id, title, content, categoryIds }) => {
 
 const deletePost = async (token, id) => {
   const tokenId = decodeToken(token); 
-  const post = await BlogPosts.findByPk(id);
+  const post = await BlogPost.findByPk(id);
   if (!post) return { code: 404, message: 'Post does not exist' };
   if (tokenId !== +id) return { code: 401, message: 'Unauthorized user' };
   await PostsCategories.destroy({ where: { postId: id } });
-  const deleteBlogPost = await BlogPosts.destroy({ where: { id } });
+  const deleteBlogPost = await BlogPost.destroy({ where: { id } });
   return deleteBlogPost;
 };
 
 const searchByTitleOrContent = async (searchTerm) => {
-  const findPost = await BlogPosts.findAll({
+  const findPost = await BlogPost.findAll({
     where: { [Op.or]: [
       { title: { [Op.substring]: searchTerm } },
       { content: { [Op.substring]: searchTerm } },
@@ -113,7 +112,7 @@ const searchByTitleOrContent = async (searchTerm) => {
 };
 
 module.exports = {
-  createBlogPost,
+  createBlogPostServices,
   getAllCategories,
   getPostById,
   updatePost,
