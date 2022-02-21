@@ -3,9 +3,11 @@ const loginServices = require('../services/login');
 
 const login = rescue(async (req, res) => {
   const { email, password } = req.body;
-  const loginUser = await loginServices.login({ email, password });
-  if (loginUser.code) return res.status(loginUser.code).json({ message: loginUser.message });
-  return res.status(200).json(loginUser);
+  const userLogin = await loginServices.login({ email, password });
+  if (userLogin.code) {
+    return res.status(userLogin.code).json({ message: userLogin.message });
+  }
+  return res.status(200).json(userLogin);
 });
 
 module.exports = { login };
