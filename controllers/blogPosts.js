@@ -11,14 +11,14 @@ const createBlogPostControllers = async (req, res) => {
   return res.status(201).json(post);
 };
 
-const getAllCategories = rescue(async (_req, res) => {
+/* const getAllCategories = rescue(async (_req, res) => {
   const blogPosts = await blogPostsServices.getAllCategories(); 
   return res.status(200).json(blogPosts);
-});
+}); */
 
-/* const getAllCategories = (_req, res) => {
+const getAllCategories = (_req, res) => {
   res.status(200).json([]);
-}; */
+}; 
 
 const getPostById = rescue(async (req, res) => {
   const { id } = req.params;
